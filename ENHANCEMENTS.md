@@ -5,3 +5,4 @@ Items that could be added, in no particular order:
 * [ ] support legacy BIOS/MBR boot mechanism
 * [ ] log output to file
 * [ ] sort out redirection
+* [ ] use separate drop-in files for configuration (eg. of systemd-boot entries) instead of inline heredocs
