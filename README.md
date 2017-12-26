@@ -7,7 +7,7 @@ This script is intended for use by experienced Arch users already familiar with 
 ###### Non-intended Use
 This script is not meant for new Arch users looking for a way to skip the manual installation. If you've ended up here because you're searching for short cuts, then Arch Linux is probably not the distribution for you.
 
-##### Assumptions
+###### Assumptions
 This script makes a whole host of assumptions about the system on which it is run.  Below are a few of the more glaring assumptions any script user should be aware of.
 * single virtual disk (eg. /dev/vda)
 * UEFI boot enabled
