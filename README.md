@@ -5,7 +5,7 @@ Bash script to automate the base Arch Linux installation.
 This script is intended for use by Arch users already familiar with the official [Arch Linux installation](https://wiki.archlinux.org/index.php/Installation_guide) process. This is meant to be used as a quick & simple way to spin up testing environments, often virtual images, or any other instance where a fresh base Arch Linux installation is desired.
 
 ###### Non-intended Use
-This script is not meant for new Arch users looking for a way to skip the manual installation. If you've ended up here because you're searching for short cuts, then Arch Linux is probably not the distribution for you.
+This script is not meant for new Arch users looking for a way to skip the manual installation.
 
 ###### Assumptions
 This script makes a whole host of assumptions about the system on which it is run.  Below are a few of the more glaring assumptions any script user should be aware of.
