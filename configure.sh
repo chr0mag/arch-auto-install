@@ -115,22 +115,9 @@ function cfg_sshd() {
 # set vim as the default editor & setup a basic zsh config
 function cfg_env() {
 	local ZSHRC=/home/${USER}/.zshrc
+	local ZSHRC_LOCAL=/home/${USER}/.zshrc.local
 	echo -e 'EDITOR=vim' > /etc/environment
-
-cat << "EOF" > $ZSHRC
-HISTFILE=~/.histfile
-HISTSIZE=10000
-SAVEHIST=$HISTSIZE
-setopt APPEND_HISTORY
-
-autoload -Uz compinit promptinit
-compinit
-promptinit
-
-# This will set the default prompt to the walters theme
-prompt walters
-bindkey -e
-EOF
+	touch $ZSHRC $ZSHRC_LOCAL
 }
 
 # Entry point
