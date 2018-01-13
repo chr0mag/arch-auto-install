@@ -1,4 +1,4 @@
-# auto-arch-install
+# arch-auto-install
 Bash script to automate the base Arch Linux installation.
 
 ###### Intended Use
