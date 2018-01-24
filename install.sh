@@ -1,6 +1,6 @@
 #!/bin/bash
 
-readonly CONFFILE="auto-install.conf"
+readonly CONFFILE="arch-auto-install.conf"
 readonly CONFIG_FILES="configure.sh iptables.rules"
 
 # print an error and exit with failure
@@ -25,14 +25,18 @@ function check_pre_reqs() {
 
 # load configuration options
 # any options not defined in the configuration file are set to default values
-# any options overridden in the configuration file to empty or null values cause the script to exit with failure
+# options except the ADD/REMOVE package lists overridden in the configuration file to empty or null values cause the script to exit with failure
 function load_config() {
 	BLOCK_DEVICE="/dev/vda"
 	HOST="arch-test"
-	USER="jules"
-	T_ZONE="Canada/Pacific"
+	USER="arch-user"
+	T_ZONE="UTC"
+	ADD="intel-ucode openssh sudo zsh grml-zsh-config vim mlocate ntp pkgstats"
+	REMOVE="jfsutils mdadm nano netctl pcmciautils reiserfsprogs s-nail systemd-sysvcompat vi xfsprogs"
 
-	source ${CONFFILE}
+	if [[ -f ${CONFFILE} ]] ; then
+		source ${CONFFILE}
+	fi
 
 	[[ -b ${BLOCK_DEVICE} ]] || error "${BLOCK_DEVICE} is not a block device"
 	[[ -n ${HOST} && -n ${USER} && -n ${T_ZONE} ]] || error "One or more configuration options empty or unset" 
