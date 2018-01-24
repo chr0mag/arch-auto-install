@@ -57,8 +57,13 @@ function cfg_accounts() {
 	echo "root:password" | chpasswd
 	useradd --create-home --groups wheel --shell /bin/zsh "$USER"
 	echo "${USER}:password" | chpasswd
-	#cat ./zshrc >> "/home/${USER}/.zshrc"
+}
+
+#enable sudo capability for 'wheel' group members; relax pw input requirements for admin user
+function cfg_sudoers() {
 	sed --in-place 's/^# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/' /etc/sudoers
+	echo "User_Alias ADMINS = ${USER}" >> /etc/sudoers.d/14-admin-timestamp
+	echo "Defaults:ADMINS timestamp_timeout=15, timestamp_type=global" >> /etc/sudoers.d/14-admin-timestamp
 }
 
 #bootloader installation, pacman hook & menu entries
@@ -112,12 +117,13 @@ function cfg_sshd() {
 	systemctl enable sshd.socket
 }
 
-# set vim as the default editor & setup a basic zsh config
+# create basic zsh config files; set vim as the default editor; enable pacman colour
 function cfg_env() {
 	local ZSHRC=/home/${USER}/.zshrc
 	local ZSHRC_LOCAL=/home/${USER}/.zshrc.local
-	echo -e 'EDITOR=vim' > /etc/environment
 	touch $ZSHRC $ZSHRC_LOCAL
+	echo -e 'EDITOR=vim' > /etc/environment
+	sed --in-place 's/#Color/Color/' /etc/pacman.conf
 }
 
 # Entry point
@@ -129,6 +135,7 @@ function main() {
 	cfg_ntp
 	cfg_iptables
 	cfg_accounts
+	cfg_sudoers
 	cfg_bootloader
 	cfg_sshd
 	cfg_env
