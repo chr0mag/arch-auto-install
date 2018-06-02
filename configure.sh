@@ -66,27 +66,13 @@ function cfg_sudoers() {
 	echo "Defaults:ADMINS timestamp_timeout=15, timestamp_type=global" >> /etc/sudoers.d/14-admin-timestamp
 }
 
-#bootloader installation, pacman hook & menu entries
+#bootloader installation
 function cfg_bootloader() {
-	local HOOK="/etc/pacman.d/hooks/systemd-boot.hook"
 	local LOADER="/boot/loader/loader.conf"
 	local ARCH_ENTRY="/boot/loader/entries/arch.conf"
 	local ARCH_FALLBACK_ENTRY="/boot/loader/entries/arch-fallback.conf"
 	bootctl --path=/boot install
 	
-	mkdir /etc/pacman.d/hooks
-cat << EOF > $HOOK
-[Trigger]
-Type = Package
-Operation = Upgrade
-Target = systemd
-
-[Action]
-Description = Updating systemd-boot...
-When = PostTransaction
-Exec = /usr/bin/bootctl update
-EOF
-
 cat << EOF > $LOADER
 default		arch
 timeout		5
@@ -107,6 +93,39 @@ linux		/vmlinuz-linux
 initrd		/intel-ucode.img
 initrd		/initramfs-linux-fallback.img
 options		root=PARTUUID=${ROOT_PARTUUID} rw init=/usr/lib/systemd/systemd fbcon=scrollback:128k ipv6.disable=1
+EOF
+}
+
+#pacman_hooks for systemd-boot and pacman cache
+function cfg_pacman_hooks() {
+        local SYSTEMD_BOOT_HOOK="/etc/pacman.d/hooks/systemd-boot.hook"
+        local PACCACHE_HOOK="/etc/pacman.d/hooks/paccache.hook"
+        mkdir /etc/pacman.d/hooks
+
+cat << EOF > $PACCACHE_HOOK
+[Trigger]
+Operation = Upgrade
+Operation = Install
+Operation = Remove
+Type = Package
+Target = *
+
+[Action]
+Description = Cleaning pacman cache...
+When = PostTransaction
+Exec = /usr/bin/paccache --remove
+EOF
+
+cat << EOF > $SYSTEMD_BOOT_HOOK
+[Trigger]
+Type = Package
+Operation = Upgrade
+Target = systemd
+
+[Action]
+Description = Updating systemd-boot...
+When = PostTransaction
+Exec = /usr/bin/bootctl update
 EOF
 }
 
@@ -137,6 +156,7 @@ function main() {
 	cfg_accounts
 	cfg_sudoers
 	cfg_bootloader
+	cfg_pacman_hooks
 	cfg_sshd
 	cfg_env
 }
