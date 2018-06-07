@@ -2,9 +2,9 @@
 Bash script to automate the base Arch Linux installation.
 
 ###### Usage
-* curl --remote-name --location https://github.com/chr0mag/arch-auto-install/archive/v0.5.tar.gz
-* tar -zxvf v0.5.tar.gz
-* cd arch-auto-install-0.5
+* curl --remote-name --location https://github.com/chr0mag/arch-auto-install/archive/v0.6.tar.gz
+* tar -zxvf v0.6.tar.gz
+* cd arch-auto-install-0.6
 * cp default.conf arch-auto-install.conf
 * edit arch-auto-install.conf
 * chmod +x install.sh configure.sh
