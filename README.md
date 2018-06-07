@@ -27,7 +27,7 @@ This script makes a whole host of assumptions about the system on which it is ru
 ###### Resulting System
 * GPT partition scheme with 550MiB Efi System Partition (ESP) (mountpoint /boot) and remainder for root (mountpoint /)
 * no SWAP partition; (a [swapfile](https://wiki.archlinux.org/index.php/Swap#Swap_file) can easilly be added post-install)
-* simple iptables stateful [firewall](https://wiki.archlinux.org/index.php/Simple_stateful_firewall) enabled with SSH port 22 open
+* simple nftables stateful [firewall](https://wiki.archlinux.org/index.php/Nftables#Simple_stateful_firewall) enabled with SSH port 22 open
 * ZSH as the default shell for the provided $USER; with the [Grml ZSH](https://grml.org/zsh/) configuration enabled
 * SSHd enabled with only the provided $USER allowed
 
