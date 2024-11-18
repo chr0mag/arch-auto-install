@@ -98,7 +98,7 @@ function pre_chroot() {
 
 # install packages
 function install() {
-	echo 'Server = https://mirrors.kernel.org/archlinux/$repo/os/$arch' >> /etc/pacman.d/mirrorlist
+	echo 'Server = https://mirrors.kernel.org/archlinux/$repo/os/$arch' > /etc/pacman.d/mirrorlist
 	pacstrap /mnt ${PKG_LIST}
 	genfstab -U /mnt >> /mnt/etc/fstab
 }
