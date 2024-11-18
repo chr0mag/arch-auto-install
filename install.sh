@@ -1,7 +1,7 @@
 #!/bin/bash
 
 readonly CONFFILE="arch-auto-install.conf"
-readonly CONFIG_FILES="configure.sh iptables.rules"
+readonly CONFIG_FILES="configure.sh iptables.rules nftables.conf"
 
 # print an error and exit with failure
 #  $1: error message
@@ -31,7 +31,7 @@ function load_config() {
 	HOST="arch-test"
 	USER="arch-user"
 	T_ZONE="UTC"
-	ADD="intel-ucode openssh sudo zsh grml-zsh-config vim mlocate ntp pkgstats curl unzip pacman-contrib"
+	ADD="intel-ucode openssh sudo zsh grml-zsh-config vim mlocate ntp pkgstats curl unzip pacman-contrib nftables"
 	REMOVE="jfsutils mdadm nano netctl pcmciautils reiserfsprogs s-nail systemd-sysvcompat vi xfsprogs"
 
 	if [[ -f ${CONFFILE} ]] ; then

@@ -45,11 +45,12 @@ function cfg_ntp() {
 	systemctl enable ntpd.service
 }
 
-#iptables
-function cfg_iptables() {
+#firewall; nftables and iptables configurations exist; nftables is the default
+function cfg_firewall() {
 #echo "net.ipv4.ip_forward=1" >> /etc/sysctl.d/30-ipforward.conf
 	cp ./iptables.rules /etc/iptables
-	systemctl enable iptables.service
+	cp ./nftables.conf /etc
+	systemctl enable nftables.service
 }
 
 #root pw, $USER account & sudo configuration
@@ -152,7 +153,7 @@ function main() {
 	cfg_locale
 	cfg_networking
 	cfg_ntp
-	cfg_iptables
+	cfg_firewall
 	cfg_accounts
 	cfg_sudoers
 	cfg_bootloader
