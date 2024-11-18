@@ -1,10 +1,16 @@
 # arch-auto-install
 Bash script to automate the base Arch Linux installation.
 
-###### Intended Use
+###### Usage
+* curl --remote-name --location https://github.com/chr0mag/arch-auto-install/archive/0.5.tar.gz
+* tar -zxvf 0.5.tar.gz
+* chmod +x install.sh configure.sh
+* ./install.sh
+
+###### Intended Audience
 This script is intended for use by Arch users already familiar with the official [Arch Linux installation](https://wiki.archlinux.org/index.php/Installation_guide) process. This is meant to be used as a quick & simple way to spin up testing environments, often virtual images, or any other instance where a fresh base Arch Linux installation is desired.
 
-###### Non-intended Use
+###### Non-intended Audience
 This script is not meant for new Arch users looking for a way to skip the manual installation.
 
 ###### Assumptions
