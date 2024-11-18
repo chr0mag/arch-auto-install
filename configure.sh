@@ -7,23 +7,25 @@ function error() {
 	exit 1
 }
 
-#check for empty input
-function check_input() {
+#check for empty input; kernel params can be empty
+function load_config() {
 	ROOT_PARTUUID="$1"
-	HOST="$2"
-	USER="$3"
-	T_ZONE="$4"
-	
-	[[ -n ${ROOT_PARTUUID} && -n ${HOST} && -n ${USER} && -n ${T_ZONE} ]] || error "One or more configuration options empty or unset"
+	CONF_FILE="$2"
 
-	echo ROOT_PARTUUID="$ROOT_PARTUUID", HOST="$HOST", USER="$USER", T_ZONE="$T_ZONE"
+	source ${CONF_FILE}
+	echo ROOT_PARTUUID="$ROOT_PARTUUID", \
+		HOST="$HOST", \
+		USER="$USER", \
+		T_ZONE="$T_ZONE", \
+		KERNEL_PARAMS="$KERNEL_PARAMS", \
+		FIRMWARE_TYPE="$FIRMWARE_TYPE", \
+		BLOCK_DEVICE="$BLOCK_DEVICE"
 }
 
 #timezone configuration
 function cfg_time() {
 	ln --verbose --symbolic --force /usr/share/zoneinfo/${T_ZONE} /etc/localtime
 	hwclock --systohc
-	sed --in-place 's/#NTP=/NTP=0.ca.pool.ntp.org 1.ca.pool.ntp.org 2.ca.pool.ntp.org 3.ca.pool.ntp.org/' /etc/systemd/timesyncd.conf
 	systemctl enable systemd-timesyncd.service
 }
 
@@ -43,7 +45,6 @@ function cfg_networking() {
 
 #firewall; nftables and iptables configurations exist; nftables is the default
 function cfg_firewall() {
-#echo "net.ipv4.ip_forward=1" >> /etc/sysctl.d/30-ipforward.conf
 	cp ./iptables.rules /etc/iptables
 	cp ./nftables.conf /etc
 	systemctl enable nftables.service
@@ -65,10 +66,24 @@ function cfg_sudoers() {
 
 #bootloader installation
 function cfg_bootloader() {
+        [[ "$FIRMWARE_TYPE" == "BIOS" ]] && install_grub || install_systemdboot
+}
+
+# grub installation
+function install_grub() {
+	grub-install --target=i386-pc --recheck "${BLOCK_DEVICE}"
+	sed --in-place "s#quiet#${KERNEL_PARAMS}#" /etc/default/grub
+	grub-mkconfig --output /boot/grub/grub.cfg
+}
+
+# install systemd-boot
+# add pacman hook to auto-update bootloader when systemd is upgraded
+function install_systemdboot() {
 	local LOADER="/boot/loader/loader.conf"
 	local ARCH_ENTRY="/boot/loader/entries/arch.conf"
 	local ARCH_FALLBACK_ENTRY="/boot/loader/entries/arch-fallback.conf"
-	local KERNEL_OPTS="root=PARTUUID=${ROOT_PARTUUID} rw init=/usr/lib/systemd/systemd fbcon=scrollback:128k ipv6.disable=1"
+	local KERNEL_OPTS="root=PARTUUID=${ROOT_PARTUUID} rw ${KERNEL_PARAMS}"
+        local SYSTEMD_BOOT_HOOK="/etc/pacman.d/hooks/systemd-boot.hook"
 	bootctl --path=/boot install
 	
 cat << EOF > $LOADER
@@ -92,14 +107,28 @@ initrd		/intel-ucode.img
 initrd		/initramfs-linux-fallback.img
 options		${KERNEL_OPTS}
 EOF
+
+[[ ! -d "/etc/pacman.d/hooks" ]] && mkdir /etc/pacman.d/hooks
+
+cat << EOF > $SYSTEMD_BOOT_HOOK
+[Trigger]
+Type = Package
+Operation = Upgrade
+Target = systemd
+
+[Action]
+Description = Updating systemd-boot...
+When = PostTransaction
+Exec = /usr/bin/bootctl update
+EOF
 }
 
-# pacman_hooks for systemd-boot and pacman cache
+# pacman_hook pacman cache maintenance
 # assumes 'pacman-contrib' package is installed
+# move to Ansible
 function cfg_pacman_hooks() {
-        local SYSTEMD_BOOT_HOOK="/etc/pacman.d/hooks/systemd-boot.hook"
         local PACCACHE_HOOK="/etc/pacman.d/hooks/paccache.hook"
-        mkdir /etc/pacman.d/hooks
+        [[ ! -d "/etc/pacman.d/hooks" ]] && mkdir /etc/pacman.d/hooks
 
 cat << EOF > $PACCACHE_HOOK
 [Trigger]
@@ -115,17 +144,6 @@ When = PostTransaction
 Exec = /usr/bin/paccache --remove
 EOF
 
-cat << EOF > $SYSTEMD_BOOT_HOOK
-[Trigger]
-Type = Package
-Operation = Upgrade
-Target = systemd
-
-[Action]
-Description = Updating systemd-boot...
-When = PostTransaction
-Exec = /usr/bin/bootctl update
-EOF
 }
 
 #sshd; disable root login, allow access only for $USER
@@ -147,7 +165,7 @@ function cfg_env() {
 
 # Entry point
 function main() {
-	check_input "$@"
+	load_config "$@"
 	cfg_time
 	cfg_locale
 	cfg_networking
