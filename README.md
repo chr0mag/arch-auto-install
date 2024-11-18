@@ -14,6 +14,7 @@ This script makes a whole host of assumptions about the system on which it is ru
 * UEFI boot enabled with Secure Boot turned off
 * running on a network w/DHCP enabled
 * execution from a system booted using the latest [Arch Linux Install Image](https://www.archlinux.org/download/)
+* a file named *auto-install.conf* exists in the same directory as the script
 
 ###### Resulting System
 * GPT partition scheme with 550MiB Efi System Partition (ESP) (mountpoint /boot) and remainder for root (mountpoint /)
