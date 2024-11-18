@@ -23,6 +23,8 @@ function check_input() {
 function cfg_time() {
 	ln --verbose --symbolic --force /usr/share/zoneinfo/${T_ZONE} /etc/localtime
 	hwclock --systohc
+	sed --in-place 's/#NTP=/NTP=0.ca.pool.ntp.org 1.ca.pool.ntp.org 2.ca.pool.ntp.org 3.ca.pool.ntp.org/' /etc/systemd/timesyncd.conf
+	systemctl enable systemd-timesyncd.service
 }
 
 #locale configuration
@@ -37,12 +39,6 @@ function cfg_locale() {
 function cfg_networking() {
 	echo "$HOST" >> /etc/hostname #hostnamectl doesn't work within arch-chroot
 	systemctl enable dhcpcd.service
-}
-
-#ntp
-function cfg_ntp() {
-	sed --in-place 's/arch.pool.ntp.org/ca.pool.ntp.org iburst/' /etc/ntp.conf
-	systemctl enable ntpd.service
 }
 
 #firewall; nftables and iptables configurations exist; nftables is the default
@@ -152,7 +148,6 @@ function main() {
 	cfg_time
 	cfg_locale
 	cfg_networking
-	cfg_ntp
 	cfg_firewall
 	cfg_accounts
 	cfg_sudoers
