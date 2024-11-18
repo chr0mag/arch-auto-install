@@ -59,9 +59,11 @@ function cfg_accounts() {
 
 #enable sudo capability for 'wheel' group members; relax pw input requirements for admin user
 function cfg_sudoers() {
-	sed --in-place 's/^# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/' /etc/sudoers
+#	sed --in-place 's/^# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/' /etc/sudoers
+	echo "%wheel ALL=(ALL) ALL" >> /etc/sudoers.d/10-wheel-group
 	echo "User_Alias ADMINS = ${USER}" >> /etc/sudoers.d/14-admin-timestamp
 	echo "Defaults:ADMINS timestamp_timeout=15, timestamp_type=global" >> /etc/sudoers.d/14-admin-timestamp
+	chmod 440 /etc/sudoers.d/*
 }
 
 #bootloader installation
