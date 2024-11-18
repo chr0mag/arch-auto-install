@@ -31,7 +31,7 @@ function load_config() {
 	HOST="arch-test"
 	USER="arch-user"
 	T_ZONE="UTC"
-	ADD="intel-ucode openssh sudo zsh grml-zsh-config vim mlocate ntp pkgstats"
+	ADD="intel-ucode openssh sudo zsh grml-zsh-config vim mlocate ntp pkgstats pacman-contrib"
 	REMOVE="jfsutils mdadm nano netctl pcmciautils reiserfsprogs s-nail systemd-sysvcompat vi xfsprogs"
 
 	if [[ -f ${CONFFILE} ]] ; then
