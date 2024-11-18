@@ -68,6 +68,7 @@ function cfg_bootloader() {
 	local LOADER="/boot/loader/loader.conf"
 	local ARCH_ENTRY="/boot/loader/entries/arch.conf"
 	local ARCH_FALLBACK_ENTRY="/boot/loader/entries/arch-fallback.conf"
+	local KERNEL_OPTS="root=PARTUUID=${ROOT_PARTUUID} rw init=/usr/lib/systemd/systemd fbcon=scrollback:128k ipv6.disable=1"
 	bootctl --path=/boot install
 	
 cat << EOF > $LOADER
@@ -81,7 +82,7 @@ title		Arch Linux
 linux		/vmlinuz-linux
 initrd		/intel-ucode.img
 initrd		/initramfs-linux.img
-options		root=PARTUUID=${ROOT_PARTUUID} rw init=/usr/lib/systemd/systemd fbcon=scrollback:128k ipv6.disable=1
+options		${KERNEL_OPTS}
 EOF
 	
 cat << EOF > $ARCH_FALLBACK_ENTRY
@@ -89,11 +90,12 @@ title		Arch Linux (fallback initramfs)
 linux		/vmlinuz-linux
 initrd		/intel-ucode.img
 initrd		/initramfs-linux-fallback.img
-options		root=PARTUUID=${ROOT_PARTUUID} rw init=/usr/lib/systemd/systemd fbcon=scrollback:128k ipv6.disable=1
+options		${KERNEL_OPTS}
 EOF
 }
 
-#pacman_hooks for systemd-boot and pacman cache
+# pacman_hooks for systemd-boot and pacman cache
+# assumes 'pacman-contrib' package is installed
 function cfg_pacman_hooks() {
         local SYSTEMD_BOOT_HOOK="/etc/pacman.d/hooks/systemd-boot.hook"
         local PACCACHE_HOOK="/etc/pacman.d/hooks/paccache.hook"
@@ -134,6 +136,7 @@ function cfg_sshd() {
 }
 
 # create basic zsh config files; set vim as the default editor; enable pacman colour
+# assumes 'grml-zsh-config' package is installed
 function cfg_env() {
 	local ZSHRC=/home/${USER}/.zshrc
 	local ZSHRC_LOCAL=/home/${USER}/.zshrc.local
